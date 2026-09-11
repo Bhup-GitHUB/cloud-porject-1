@@ -1,6 +1,6 @@
 # eCommerce Secure Cloud File Platform
 
-A full-stack cloud file management project for eCommerce, demonstrating secure file storage with upload/download, S3-native versioning, backup replication, and JWT-based authentication.
+A full-stack secure analytical platform for eCommerce, demonstrating secure file storage with upload/download, S3-native versioning, backup replication, JWT-based authentication, and a personalized product ranking system.
 
 ## Stack
 
@@ -19,6 +19,15 @@ ecommerce-cloud-platform/
   docker-compose.yml
 ```
 
+## Personalized Product Ranking
+
+Logged-in users see a `/products` page listing sample eCommerce products ranked specifically for them. The ranking score for each product combines:
+
+- **Popularity (70%)**: the product's `rating` and `salesCount`, each normalized 0-1 across the whole catalog and averaged.
+- **Personal affinity (30%)**: how often the current user has viewed products in that product's category, normalized against their own most-viewed category. A user with no view history yet gets 0 affinity, so their ranking falls back to pure popularity.
+
+Every time a user opens a product (`POST /api/products/:id/view`), that view is recorded, so clicking around different categories visibly reorders the list on refresh — this is the "personalized" part demoed live, e.g. by logging in as two different users and viewing different categories to show each gets a different ranking.
+
 ## 1. Local Setup
 
 ### Backend
@@ -33,6 +42,12 @@ npm run dev
 ```
 
 Backend runs on `http://localhost:4000`.
+
+Seed sample product data for the ranking feature after running migrations:
+
+```
+npx prisma db seed
+```
 
 ### Frontend
 
@@ -60,10 +75,11 @@ DATABASE_URL=postgresql://user:password@ep-xxxx.neon.tech/dbname?sslmode=require
 ```
 npx prisma generate
 npx prisma migrate dev --name init
+npx prisma db seed
 npx prisma studio
 ```
 
-Schema is defined in `backend/prisma/schema.prisma` with `User` and `File` models.
+Schema is defined in `backend/prisma/schema.prisma` with `User`, `File`, `Product`, and `ProductView` models. `npx prisma db seed` populates the `Product` table with sample eCommerce products so the ranking page has data to rank.
 
 ## 4. AWS S3 Setup
 

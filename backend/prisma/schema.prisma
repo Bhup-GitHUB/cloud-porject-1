@@ -8,11 +8,12 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  files     File[]
+  id           String        @id @default(cuid())
+  email        String        @unique
+  password     String
+  createdAt    DateTime      @default(now())
+  files        File[]
+  productViews ProductView[]
 }
 
 model File {
@@ -27,4 +28,28 @@ model File {
   createdAt   DateTime @default(now())
 
   @@index([userId, filename])
+}
+
+model Product {
+  id          String        @id @default(cuid())
+  name        String
+  category    String
+  price       Float
+  imageUrl    String
+  rating      Float
+  salesCount  Int
+  createdAt   DateTime      @default(now())
+  views       ProductView[]
+}
+
+model ProductView {
+  id         String   @id @default(cuid())
+  userId     String
+  productId  String
+  user       User     @relation(fields: [userId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@index([userId, productId])
+  @@index([userId, createdAt])
 }
