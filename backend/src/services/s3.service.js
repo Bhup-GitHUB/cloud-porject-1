@@ -10,10 +10,15 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
+  ...(process.env.AWS_ACCESS_KEY_ID && {
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      ...(process.env.AWS_SESSION_TOKEN && {
+        sessionToken: process.env.AWS_SESSION_TOKEN,
+      }),
+    },
+  }),
 });
 
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
