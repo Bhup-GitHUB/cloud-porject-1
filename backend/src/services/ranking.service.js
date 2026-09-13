@@ -9,9 +9,11 @@ async function getRankedProductsForUser(userId) {
   });
 
   const categoryViewCounts = {};
+  const productViewCounts = {};
   for (const view of views) {
     const category = view.product.category;
     categoryViewCounts[category] = (categoryViewCounts[category] || 0) + 1;
+    productViewCounts[view.productId] = (productViewCounts[view.productId] || 0) + 1;
   }
 
   const ratings = products.map((product) => product.rating);
@@ -32,9 +34,15 @@ async function getRankedProductsForUser(userId) {
     const affinityScore =
       maxCategoryViews > 0 ? (categoryViewCounts[product.category] || 0) / maxCategoryViews : 0;
 
-    const finalScore = popularityScore * 0.7 + affinityScore * 0.3;
+    const finalScore = popularityScore * 0.5 + affinityScore * 0.5;
 
-    return { ...product, score: finalScore };
+    return {
+      ...product,
+      score: finalScore,
+      popularityScore,
+      affinityScore,
+      viewCount: productViewCounts[product.id] || 0,
+    };
   });
 
   ranked.sort((a, b) => b.score - a.score);

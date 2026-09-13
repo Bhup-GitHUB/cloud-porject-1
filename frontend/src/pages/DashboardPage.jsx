@@ -31,21 +31,36 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-50">
       <AppHeader />
 
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-        <UploadDropzone onUploaded={fetchFiles} />
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            Secure file storage
+          </h1>
+          <p className="mt-1.5 max-w-2xl text-sm text-slate-500">
+            Files are stored in Amazon S3 with versioning enabled and replicated
+            to a backup bucket. Any earlier version can be restored at any time.
+          </p>
+        </div>
 
-        {loading ? (
-          <p className="text-gray-500 text-center py-8">Loading files...</p>
-        ) : (
-          <FilesTable
-            files={files}
-            onRefresh={fetchFiles}
-            onViewVersions={handleViewVersions}
-          />
-        )}
+        <div className="space-y-6">
+          <UploadDropzone onUploaded={fetchFiles} />
+
+          {loading ? (
+            <div className="surface flex flex-col items-center justify-center px-6 py-16 text-center">
+              <span className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-indigo-600" />
+              <p className="mt-4 text-sm text-slate-500">Loading files...</p>
+            </div>
+          ) : (
+            <FilesTable
+              files={files}
+              onRefresh={fetchFiles}
+              onViewVersions={handleViewVersions}
+            />
+          )}
+        </div>
       </main>
 
       <VersionsModal
